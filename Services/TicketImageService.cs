@@ -252,6 +252,25 @@ namespace Ticket.Services
             float qrX = cx - qrSize / 2f;
             float qrY_ = y;
 
+            float qrCY = qrY_ + qrSize / 2f;
+
+            float waveCy = qrCY;
+            for (int i = 0; i < 10; i++)
+            {
+                float rad = 110 * s + i * 18 * s;
+                byte alpha = (byte)((0.02f + i * 0.012f) * 255);
+                var wavePaint = new SKPaint
+                {
+                    Color = new SKColor(0x7C, 0x3A, 0xED, alpha),
+                    IsAntialias = true,
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = (2f - i * 0.12f) * s
+                };
+                if (i % 2 == 0)
+                    wavePaint.PathEffect = SKPathEffect.CreateDash(new[] { 5 * s, 4 * s }, 0);
+                canvas.DrawCircle(cx, waveCy, rad, wavePaint);
+            }
+
             var qrOuterGlow = new SKPaint
             {
                 Color = new SKColor(0x7C, 0x3A, 0xED, 0x25),
@@ -301,27 +320,6 @@ namespace Ticket.Services
             canvas.DrawText(tid, cx - tidW / 2f, y + tidFont.Size * 0.75f, tidFont, new SKPaint { Color = w80, IsAntialias = true });
 
             y += 36 * s;
-
-            // ============================================================
-            // CONCENTRIC CYCLE LINES
-            // ============================================================
-            float waveCy = y + 36 * s;
-            for (int i = 0; i < 8; i++)
-            {
-                float rad = 10 * s + i * 14 * s;
-                byte alpha = (byte)((0.03f + i * 0.015f) * 255);
-                var wavePaint = new SKPaint
-                {
-                    Color = new SKColor(0x7C, 0x3A, 0xED, alpha),
-                    IsAntialias = true,
-                    Style = SKPaintStyle.Stroke,
-                    StrokeWidth = (1.5f - i * 0.1f) * s
-                };
-                if (i % 2 == 0)
-                    wavePaint.PathEffect = SKPathEffect.CreateDash(new[] { 4 * s, 3 * s }, 0);
-                canvas.DrawCircle(cx, waveCy, rad, wavePaint);
-            }
-            y += 80 * s;
 
             // ============================================================
             // GRADIENT SEPARATOR
