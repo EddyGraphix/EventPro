@@ -98,7 +98,7 @@ namespace Ticket.Services
             DrawCornerOrnament(canvas, bp + 10 * s, h - bp - 30 * s, 20 * s, purple);
             DrawCornerOrnament(canvas, mr - 10 * s, h - bp - 30 * s, 20 * s, purple);
 
-            float y = 108 * s;
+            float y = 120 * s;
             float maxW = mr - ml;
 
             // ============================================================
