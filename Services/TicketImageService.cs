@@ -28,7 +28,7 @@ namespace Ticket.Services
             var location = evt?.Description ?? string.Empty;
 
             const float s = 1.8f;
-            int w = (int)(800 * s), h = (int)(1350 * s);
+            int w = (int)(800 * s), h = (int)(1450 * s);
             var info = new SKImageInfo(w, h);
             using var surface = SKSurface.Create(info);
             var canvas = surface.Canvas;
@@ -98,7 +98,7 @@ namespace Ticket.Services
             DrawCornerOrnament(canvas, bp + 10 * s, h - bp - 30 * s, 20 * s, purple);
             DrawCornerOrnament(canvas, mr - 10 * s, h - bp - 30 * s, 20 * s, purple);
 
-            float y = 170 * s;
+            float y = 96 * s;
             float maxW = mr - ml;
 
             // ============================================================
@@ -164,7 +164,7 @@ namespace Ticket.Services
             // ATTENDEE PHOTO — circular, large
             // ============================================================
             var photoBytes = await GetPhotoBytesAsync(attendee);
-            float avSize = 340 * s;
+            float avSize = 300 * s;
 
             var avatarGlow = new SKPaint
             {
@@ -220,7 +220,7 @@ namespace Ticket.Services
                 anW = nameFont.MeasureText(an, new SKPaint());
             }
             canvas.DrawText(an, cx - anW / 2f, y + nameFont.Size * 0.85f, nameFont, new SKPaint { Color = w90, IsAntialias = true });
-            y += nameFont.Size * 0.85f + 28 * s;
+            y += nameFont.Size * 0.85f + 24 * s;
 
             // ============================================================
             // TICKET TYPE BADGE
@@ -241,14 +241,14 @@ namespace Ticket.Services
                 new SKPaint { Color = new SKColor(0x7C, 0x3A, 0xED, 0x35), IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1 * s });
             canvas.DrawText(tt, cx - ttW / 2f, y + badgeH / 2f + badgeFont.Size * 0.35f, badgeFont, new SKPaint { Color = white, IsAntialias = true });
 
-            y += badgeH + 52 * s;
+            y += badgeH + 44 * s;
 
             // ============================================================
             // QR CODE — large, premium styling
             // ============================================================
             var qrBytes = _qrService.GenerateQrCode(attendee);
             using var qrBitmap = SKBitmap.Decode(qrBytes);
-            int qrSize = (int)(320 * s);
+            int qrSize = (int)(290 * s);
             float qrX = cx - qrSize / 2f;
             float qrY_ = y;
 
@@ -274,7 +274,7 @@ namespace Ticket.Services
                 new SKPaint { Color = new SKColor(0x7C, 0x3A, 0xED, 0x35), IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 2 * s });
 
             canvas.DrawBitmap(qrBitmap, new SKRect(qrX, qrY_, qrX + qrSize, qrY_ + qrSize));
-            y += qrSize + 56 * s;
+            y += qrSize + 48 * s;
 
             var scanText = "SCAN AT EVENT ENTRANCE";
             var scanW = scanFont.MeasureText(scanText, new SKPaint());
