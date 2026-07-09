@@ -108,6 +108,7 @@ namespace Ticket.ViewModels
                 if (photo is null) return;
 
                 _photoPath = await SaveToCacheAsync(photo);
+                PhotoPreview = ImageSource.FromFile(_photoPath);
             }
             catch (Exception ex)
             {
@@ -126,6 +127,7 @@ namespace Ticket.ViewModels
                 if (photo is null) return;
 
                 _photoPath = await SaveToCacheAsync(photo);
+                PhotoPreview = ImageSource.FromFile(_photoPath);
             }
             catch (Exception ex)
             {
