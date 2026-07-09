@@ -98,7 +98,7 @@ namespace Ticket.Services
             DrawCornerOrnament(canvas, bp + 10 * s, h - bp - 30 * s, 20 * s, purple);
             DrawCornerOrnament(canvas, mr - 10 * s, h - bp - 30 * s, 20 * s, purple);
 
-            float y = 116 * s;
+            float y = 108 * s;
             float maxW = mr - ml;
 
             // ============================================================
@@ -300,7 +300,28 @@ namespace Ticket.Services
             var tidW = tidFont.MeasureText(tid, new SKPaint());
             canvas.DrawText(tid, cx - tidW / 2f, y + tidFont.Size * 0.75f, tidFont, new SKPaint { Color = w80, IsAntialias = true });
 
-            y += 44 * s;
+            y += 36 * s;
+
+            // ============================================================
+            // CONCENTRIC CYCLE LINES
+            // ============================================================
+            float waveCy = y + 36 * s;
+            for (int i = 0; i < 8; i++)
+            {
+                float rad = 10 * s + i * 14 * s;
+                byte alpha = (byte)((0.03f + i * 0.015f) * 255);
+                var wavePaint = new SKPaint
+                {
+                    Color = new SKColor(0x7C, 0x3A, 0xED, alpha),
+                    IsAntialias = true,
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = (1.5f - i * 0.1f) * s
+                };
+                if (i % 2 == 0)
+                    wavePaint.PathEffect = SKPathEffect.CreateDash(new[] { 4 * s, 3 * s }, 0);
+                canvas.DrawCircle(cx, waveCy, rad, wavePaint);
+            }
+            y += 80 * s;
 
             // ============================================================
             // GRADIENT SEPARATOR
