@@ -28,109 +28,151 @@ namespace Ticket.Services
             var location = evt?.Description ?? string.Empty;
 
             const float s = 1.8f;
-            int w = (int)(800 * s), h = (int)(1400 * s);
+            int w = (int)(800 * s), h = (int)(1350 * s);
             var info = new SKImageInfo(w, h);
             using var surface = SKSurface.Create(info);
             var canvas = surface.Canvas;
 
+            var navy = new SKColor(0x0F, 0x17, 0x2A);
+            var purple = new SKColor(0x7C, 0x3A, 0xED);
+            var teal = new SKColor(0x06, 0xB6, 0xD4);
             var white = SKColors.White;
+            var w90 = new SKColor(0xFF, 0xFF, 0xFF, 0xE6);
             var w80 = new SKColor(0xFF, 0xFF, 0xFF, 0xCC);
             var w50 = new SKColor(0xFF, 0xFF, 0xFF, 0x80);
+            var w30 = new SKColor(0xFF, 0xFF, 0xFF, 0x4D);
+            var w15 = new SKColor(0xFF, 0xFF, 0xFF, 0x26);
+            var w08 = new SKColor(0xFF, 0xFF, 0xFF, 0x14);
+            var w04 = new SKColor(0xFF, 0xFF, 0xFF, 0x0A);
 
-            using var bgShader = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0), new SKPoint(0, h),
-                new SKColor[] { new SKColor(0x0F, 0x17, 0x2A), new SKColor(0x16, 0x19, 0x38) },
-                SKShaderTileMode.Clamp);
-            canvas.DrawRect(0, 0, w, h, new SKPaint { Shader = bgShader });
+            canvas.DrawRect(0, 0, w, h, new SKPaint { Color = navy });
+
+            var topGlow = new SKPaint
+            {
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x15),
+                IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 100 * s)
+            };
+            canvas.DrawCircle(w * 0.5f, 0, 300 * s, topGlow);
+
+            var bottomGlow = new SKPaint
+            {
+                Color = new SKColor(0x06, 0xB6, 0xD4, 0x08),
+                IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 120 * s)
+            };
+            canvas.DrawCircle(w * 0.5f, h * 0.92f, 250 * s, bottomGlow);
+
+            DrawDotGrid(canvas, w, h, navy, s);
 
             float cx = w / 2f;
-            float pad = 52 * s;
+            float pad = 44 * s;
             float ml = pad;
             float mr = w - pad;
 
-            var eventFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                52 * s);
-            var nameFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                44 * s);
-            using var locFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                18 * s);
-            using var pillFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                18 * s);
-            using var scanFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                18 * s);
-            using var tidLabelFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                11 * s);
-            using var tidValFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                18 * s);
-            using var footerFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                14 * s);
-            using var initFont = new SKFont(
-                SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                100 * s);
+            var titleFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 54 * s);
+            using var subFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 16 * s);
+            var nameFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 42 * s);
+            using var badgeFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 18 * s);
+            using var scanFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 13 * s);
+            using var smallFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 12 * s);
+            using var labelFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 10 * s);
+            using var initFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 100 * s);
+            using var brandFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 15 * s);
 
-            var stroke = new SKPaint
+            // ============================================================
+            // TICKET BORDER
+            // ============================================================
+            var borderPaint = new SKPaint
             {
-                Color = white,
-                IsAntialias = false,
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x20),
+                IsAntialias = true,
                 Style = SKPaintStyle.Stroke,
-                StrokeWidth = 3 * s
+                StrokeWidth = 1 * s
             };
+            float bp = 12 * s;
+            canvas.DrawRoundRect(bp, bp, w - bp * 2, h - bp * 2, 16 * s, 16 * s, borderPaint);
 
-            var fillWhite = new SKPaint { Color = white, IsAntialias = false };
+            DrawCornerOrnament(canvas, bp + 10 * s, bp + 10 * s, 20 * s, purple);
+            DrawCornerOrnament(canvas, mr - 10 * s, bp + 10 * s, 20 * s, purple);
+            DrawCornerOrnament(canvas, bp + 10 * s, h - bp - 30 * s, 20 * s, purple);
+            DrawCornerOrnament(canvas, mr - 10 * s, h - bp - 30 * s, 20 * s, purple);
 
-            float borderInset = 14 * s;
-            canvas.DrawRect(borderInset, borderInset, w - borderInset * 2, h - borderInset * 2, stroke);
-
-            float y = 140 * s;
+            float y = 170 * s;
             float maxW = mr - ml;
 
-            // ================================================================
+            // ============================================================
             // EVENT NAME
-            // ================================================================
-            var evtStr = eventName.ToUpper();
-            float evtW = eventFont.MeasureText(evtStr, new SKPaint());
-            if (evtW > maxW)
+            // ============================================================
+            var titleStr = eventName.ToUpper();
+            var tW = titleFont.MeasureText(titleStr, new SKPaint());
+            if (tW > maxW)
             {
-                float fs = 52 * s * (maxW / evtW) * 0.95f;
-                eventFont.Dispose();
-                eventFont = new SKFont(
-                    SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                    fs);
-                evtW = eventFont.MeasureText(evtStr, new SKPaint());
+                float fs2 = 54 * s * (maxW / tW) * 0.95f;
+                titleFont.Dispose();
+                titleFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), fs2);
+                tW = titleFont.MeasureText(titleStr, new SKPaint());
             }
-            canvas.DrawText(evtStr, cx - evtW / 2f, y + eventFont.Size * 0.85f, eventFont, fillWhite);
-            y += eventFont.Size * 0.85f + 20 * s;
 
-            // ================================================================
+            var titleGlow = new SKPaint
+            {
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x20),
+                IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 16 * s)
+            };
+            canvas.DrawText(titleStr, cx - tW / 2f, y + 3 * s, titleFont, titleGlow);
+            canvas.DrawText(titleStr, cx - tW / 2f, y, titleFont, new SKPaint { Color = white, IsAntialias = true });
+            y += 46 * s;
+
+            // ============================================================
             // LOCATION
-            // ================================================================
+            // ============================================================
             if (!string.IsNullOrEmpty(location))
             {
-                var locW = locFont.MeasureText(location, new SKPaint());
-                canvas.DrawText(location, cx - locW / 2f, y + locFont.Size * 0.75f, locFont, new SKPaint { Color = w80, IsAntialias = false });
-                y += locFont.Size * 0.75f + 32 * s;
+                var locW = subFont.MeasureText(location, new SKPaint());
+                canvas.DrawText(location, cx - locW / 2f, y, subFont, new SKPaint { Color = w50, IsAntialias = true });
+                y += 36 * s;
             }
 
-            // ================================================================
-            // DIVIDER 1
-            // ================================================================
-            canvas.DrawLine(ml, y, mr, y, stroke);
-            y += 36 * s;
+            // ============================================================
+            // GRADIENT SEPARATOR
+            // ============================================================
+            var sepGrad = SKShader.CreateLinearGradient(
+                new SKPoint(ml, 0), new SKPoint(mr, 0),
+                new[] { w04, w30, w04 }, new[] { 0f, 0.5f, 1f }, SKShaderTileMode.Clamp);
+            canvas.DrawLine(ml, y, mr, y, new SKPaint { Shader = sepGrad, StrokeWidth = 1 * s, IsAntialias = true });
+            y += 32 * s;
 
-            // ================================================================
-            // ATTENDEE PHOTO — circular, larger
-            // ================================================================
+            // ============================================================
+            // PERFORATED TEAR LINE
+            // ============================================================
+            float notchY = y;
+            for (float nx_ = 0; nx_ <= w; nx_ += 30 * s)
+                canvas.DrawCircle(nx_, notchY, 6 * s, new SKPaint { Color = navy, IsAntialias = true });
+            canvas.DrawLine(ml, notchY, mr, notchY,
+                new SKPaint { Color = w15, StrokeWidth = 1 * s, PathEffect = SKPathEffect.CreateDash(new[] { 8 * s, 8 * s }, 0), IsAntialias = true });
+
+            var notchLabel = "━━ TICKET ━━";
+            var nlW = smallFont.MeasureText(notchLabel, new SKPaint());
+            canvas.DrawRoundRect(cx - nlW / 2f - 10 * s, notchY - 10 * s, nlW + 20 * s, 20 * s, 10 * s, 10 * s,
+                new SKPaint { Color = navy, IsAntialias = true });
+            canvas.DrawText(notchLabel, cx - nlW / 2f, notchY + 4 * s, smallFont, new SKPaint { Color = w30, IsAntialias = true });
+
+            y += 40 * s;
+
+            // ============================================================
+            // ATTENDEE PHOTO — circular, large
+            // ============================================================
             var photoBytes = await GetPhotoBytesAsync(attendee);
-            float avSize = 300 * s;
-            float avCY = y + avSize / 2f;
+            float avSize = 340 * s;
+
+            var avatarGlow = new SKPaint
+            {
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x15),
+                IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 10 * s)
+            };
+            canvas.DrawCircle(cx, y + avSize / 2f, avSize / 2f + 4 * s, avatarGlow);
 
             if (photoBytes is not null)
             {
@@ -148,118 +190,161 @@ namespace Ticket.Services
                     cc.ClipPath(cp, SKClipOperation.Intersect, true);
                     cc.DrawBitmap(src, new SKRect(-sx * avSize / ss, -sy * avSize / ss,
                         (src.Width - sx) * avSize / ss, (src.Height - sy) * avSize / ss));
-                    canvas.DrawBitmap(circ, cx - avSize / 2f, avCY - avSize / 2f);
+                    canvas.DrawBitmap(circ, cx - avSize / 2f, y);
                 }
             }
             else
             {
-                canvas.DrawCircle(cx, avCY, avSize / 2f, new SKPaint { Color = new SKColor(0xFF, 0xFF, 0xFF, 0x20), IsAntialias = false });
-                canvas.DrawCircle(cx, avCY, avSize / 2f, stroke);
-                var init = !string.IsNullOrEmpty(attendee.FullName) ? attendee.FullName[..1].ToUpper() : "?";
-                var iw = initFont.MeasureText(init, new SKPaint());
-                canvas.DrawText(init, cx - iw / 2f, avCY + 14 * s, initFont, fillWhite);
+                var avatarGrad = SKShader.CreateLinearGradient(
+                    new SKPoint(0, 0), new SKPoint(avSize, avSize),
+                    new[] { purple, teal }, new[] { 0f, 1f }, SKShaderTileMode.Clamp);
+                canvas.DrawCircle(cx, y + avSize / 2f, avSize / 2f, new SKPaint { Shader = avatarGrad, IsAntialias = true });
+
+                var initial = !string.IsNullOrEmpty(attendee.FullName) ? attendee.FullName[..1].ToUpper() : "?";
+                var iw = initFont.MeasureText(initial, new SKPaint());
+                canvas.DrawText(initial, cx - iw / 2f, y + avSize / 2f + 14 * s, initFont, new SKPaint { Color = white, IsAntialias = true });
             }
 
-            y += avSize + 30 * s;
+            y += avSize + 34 * s;
 
-            // ================================================================
+            // ============================================================
             // ATTENDEE NAME — large bold uppercase
-            // ================================================================
+            // ============================================================
             var an = attendee.FullName.ToUpper();
             float anW = nameFont.MeasureText(an, new SKPaint());
             if (anW > maxW)
             {
-                float fs = 44 * s * (maxW / anW) * 0.95f;
+                float fs2 = 42 * s * (maxW / anW) * 0.95f;
                 nameFont.Dispose();
-                nameFont = new SKFont(
-                    SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
-                    fs);
+                nameFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), fs2);
                 anW = nameFont.MeasureText(an, new SKPaint());
             }
-            canvas.DrawText(an, cx - anW / 2f, y + nameFont.Size * 0.85f, nameFont, fillWhite);
-            y += nameFont.Size * 0.85f + 24 * s;
+            canvas.DrawText(an, cx - anW / 2f, y + nameFont.Size * 0.85f, nameFont, new SKPaint { Color = w90, IsAntialias = true });
+            y += nameFont.Size * 0.85f + 28 * s;
 
-            // ================================================================
-            // TICKET TYPE PILL
-            // ================================================================
+            // ============================================================
+            // TICKET TYPE BADGE
+            // ============================================================
             var tt = attendee.TicketType.ToUpper();
             if (string.IsNullOrEmpty(tt)) tt = "GENERAL";
-            float tW = pillFont.MeasureText(tt, new SKPaint());
-            float pillH = 34 * s;
-            float pillPadX = 20 * s;
-            float pillW = tW + pillPadX * 2;
-            float pY = y;
-            var pillRect = new SKRect(cx - pillW / 2f, pY, cx + pillW / 2f, pY + pillH);
-            canvas.DrawRect(pillRect, fillWhite);
-            canvas.DrawRect(pillRect, stroke);
-            canvas.DrawText(tt, cx - tW / 2f, pY + pillH / 2f + pillFont.Size * 0.35f, pillFont, new SKPaint { Color = new SKColor(0x0F, 0x17, 0x2A), IsAntialias = false });
-            y += pillH + 48 * s;
+            float ttW = badgeFont.MeasureText(tt, new SKPaint());
+            float badgeH = 32 * s;
+            float badgePadX = 20 * s;
+            float badgeW = ttW + badgePadX * 2;
 
-            // ================================================================
-            // QR CODE — large, thick black border
-            // ================================================================
+            var badgeShader = SKShader.CreateLinearGradient(
+                new SKPoint(0, 0), new SKPoint(1, 0),
+                new[] { new SKColor(0x7C, 0x3A, 0xED, 0x25), new SKColor(0x25, 0x63, 0xEB, 0x12) },
+                new[] { 0f, 1f }, SKShaderTileMode.Clamp);
+            canvas.DrawRoundRect(cx - badgeW / 2f, y, badgeW, badgeH, 8 * s, 8 * s, new SKPaint { Shader = badgeShader, IsAntialias = true });
+            canvas.DrawRoundRect(cx - badgeW / 2f, y, badgeW, badgeH, 8 * s, 8 * s,
+                new SKPaint { Color = new SKColor(0x7C, 0x3A, 0xED, 0x35), IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1 * s });
+            canvas.DrawText(tt, cx - ttW / 2f, y + badgeH / 2f + badgeFont.Size * 0.35f, badgeFont, new SKPaint { Color = white, IsAntialias = true });
+
+            y += badgeH + 52 * s;
+
+            // ============================================================
+            // QR CODE — large, premium styling
+            // ============================================================
             var qrBytes = _qrService.GenerateQrCode(attendee);
-            using var qrBmp = SKBitmap.Decode(qrBytes);
-            int qrS = (int)(280 * s);
-            float qPad = 18 * s;
-            float qCW = qrS + qPad * 2;
-            float qCardH = qrS + qPad * 2 + 32 * s;
-            float qCX = cx - qCW / 2f;
-            float qCY = y;
+            using var qrBitmap = SKBitmap.Decode(qrBytes);
+            int qrSize = (int)(320 * s);
+            float qrX = cx - qrSize / 2f;
+            float qrY_ = y;
 
-            var qrCardRect = new SKRect(qCX, qCY, qCX + qCW, qCY + qCardH);
-            canvas.DrawRect(qrCardRect, fillWhite);
-            canvas.DrawRect(qrCardRect, stroke);
+            var qrOuterGlow = new SKPaint
+            {
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x25),
+                IsAntialias = true,
+                MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 24 * s)
+            };
+            canvas.DrawRoundRect(qrX - 14 * s, qrY_ - 14 * s, qrSize + 28 * s, qrSize + 28 * s, 16 * s, 16 * s, qrOuterGlow);
 
-            float qX = cx - qrS / 2f;
-            float qY = qCY + qPad;
-            canvas.DrawBitmap(qrBmp, new SKRect(qX, qY, qX + qrS, qY + qrS));
+            var qrFramePaint = new SKPaint
+            {
+                Color = new SKColor(0x7C, 0x3A, 0xED, 0x08),
+                IsAntialias = true,
+            };
+            canvas.DrawRoundRect(qrX - 12 * s, qrY_ - 12 * s, qrSize + 24 * s, qrSize + 24 * s, 14 * s, 14 * s, qrFramePaint);
 
-            var scanTxt = "SCAN FOR ENTRY";
-            float sW = scanFont.MeasureText(scanTxt, new SKPaint());
-            canvas.DrawText(scanTxt, cx - sW / 2f, qY + qrS + 28 * s, scanFont, fillWhite);
+            canvas.DrawRoundRect(qrX - 10 * s, qrY_ - 10 * s, qrSize + 20 * s, qrSize + 20 * s, 12 * s, 12 * s,
+                new SKPaint { Color = white, IsAntialias = true });
 
-            y = qCY + qCardH + 48 * s;
+            canvas.DrawRoundRect(qrX - 10 * s, qrY_ - 10 * s, qrSize + 20 * s, qrSize + 20 * s, 12 * s, 12 * s,
+                new SKPaint { Color = new SKColor(0x7C, 0x3A, 0xED, 0x35), IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 2 * s });
 
-            // ================================================================
-            // DIVIDER 2
-            // ================================================================
-            canvas.DrawLine(ml, y, mr, y, stroke);
-            y += 32 * s;
+            canvas.DrawBitmap(qrBitmap, new SKRect(qrX, qrY_, qrX + qrSize, qrY_ + qrSize));
+            y += qrSize + 56 * s;
 
-            // ================================================================
-            // TICKET ID
-            // ================================================================
-            canvas.DrawText("TICKET ID", cx - tidLabelFont.MeasureText("TICKET ID", new SKPaint()) / 2f,
-                y + tidLabelFont.Size * 0.7f, tidLabelFont, new SKPaint { Color = w50, IsAntialias = false });
+            var scanText = "SCAN AT EVENT ENTRANCE";
+            var scanW = scanFont.MeasureText(scanText, new SKPaint());
+            canvas.DrawText(scanText, cx - scanW / 2f, y, scanFont, new SKPaint { Color = w50, IsAntialias = true });
+
+            y += 52 * s;
+
+            // ============================================================
+            // GRADIENT SEPARATOR
+            // ============================================================
+            canvas.DrawLine(ml, y, mr, y, new SKPaint { Shader = sepGrad, StrokeWidth = 1 * s, IsAntialias = true });
             y += 24 * s;
 
+            // ============================================================
+            // TICKET ID
+            // ============================================================
+            canvas.DrawText("TICKET ID", cx - labelFont.MeasureText("TICKET ID", new SKPaint()) / 2f,
+                y, labelFont, new SKPaint { Color = w50, IsAntialias = true });
+            y += 22 * s;
+
+            using var tidFont = new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright), 18 * s);
             var tid = $"TKT-{attendee.TicketCode}";
-            float tidW = tidValFont.MeasureText(tid, new SKPaint());
-            canvas.DrawText(tid, cx - tidW / 2f, y + tidValFont.Size * 0.75f, tidValFont,
-                new SKPaint { Color = w80, IsAntialias = false });
-            y += 40 * s;
+            var tidW = tidFont.MeasureText(tid, new SKPaint());
+            canvas.DrawText(tid, cx - tidW / 2f, y + tidFont.Size * 0.75f, tidFont, new SKPaint { Color = w80, IsAntialias = true });
 
-            // ================================================================
-            // DIVIDER 3
-            // ================================================================
-            canvas.DrawLine(ml, y, mr, y, stroke);
-            y += 28 * s;
+            y += 44 * s;
 
-            // ================================================================
+            // ============================================================
+            // GRADIENT SEPARATOR
+            // ============================================================
+            canvas.DrawLine(ml, y, mr, y, new SKPaint { Shader = sepGrad, StrokeWidth = 1 * s, IsAntialias = true });
+            y += 22 * s;
+
+            // ============================================================
             // FOOTER
-            // ================================================================
-            var brand = "EVENTPRO BY EDDY GRAPHIX";
-            float bW = footerFont.MeasureText(brand, new SKPaint());
-            canvas.DrawText(brand, cx - bW / 2f, y + footerFont.Size * 0.7f, footerFont,
-                new SKPaint { Color = w50, IsAntialias = false });
+            // ============================================================
+            var brandText = "EventPro by Eddy Graphix";
+            var brandW = brandFont.MeasureText(brandText, new SKPaint());
+            canvas.DrawText(brandText, cx - brandW / 2f, y + 16 * s, brandFont, new SKPaint { Color = w50, IsAntialias = true });
 
-            eventFont.Dispose();
+            titleFont.Dispose();
             nameFont.Dispose();
 
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
             return new MemoryStream(data.ToArray());
+        }
+
+        // ============================================================
+        // DECORATIVE HELPERS
+        // ============================================================
+        private static void DrawDotGrid(SKCanvas c, int w, int h, SKColor bg, float s)
+        {
+            var dot = new SKPaint
+            {
+                Color = new SKColor(0xFF, 0xFF, 0xFF, 0x04),
+                IsAntialias = true
+            };
+            float spacing = 40 * s;
+            for (float x = 0; x < w; x += spacing)
+                for (float y = 0; y < h; y += spacing)
+                    c.DrawCircle(x, y, 1.2f * s, dot);
+        }
+
+        private static void DrawCornerOrnament(SKCanvas c, float x, float y, float size, SKColor color)
+        {
+            var p = new SKPaint { Color = new SKColor(color.Red, color.Green, color.Blue, 0x30), IsAntialias = true, StrokeWidth = 1.5f, Style = SKPaintStyle.Stroke };
+            float s2 = size / 2f;
+            c.DrawLine(x, y + s2, x + s2, y + s2, p);
+            c.DrawLine(x + s2, y, x + s2, y + s2, p);
         }
 
         private static async Task<byte[]?> GetPhotoBytesAsync(Attendee attendee)

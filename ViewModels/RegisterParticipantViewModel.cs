@@ -107,8 +107,7 @@ namespace Ticket.ViewModels
                 var photo = await MediaPicker.CapturePhotoAsync();
                 if (photo is null) return;
 
-                _photoPath = photo.FullPath;
-                PhotoPreview = ImageSource.FromFile(photo.FullPath);
+                _photoPath = await SaveToCacheAsync(photo);
             }
             catch (Exception ex)
             {
@@ -126,13 +125,23 @@ namespace Ticket.ViewModels
 #pragma warning restore CS0618
                 if (photo is null) return;
 
-                _photoPath = photo.FullPath;
-                PhotoPreview = ImageSource.FromFile(photo.FullPath);
+                _photoPath = await SaveToCacheAsync(photo);
             }
             catch (Exception ex)
             {
                 await PopupHelper.ShowErrorToastAsync(ex.Message);
             }
+        }
+
+        private static async Task<string> SaveToCacheAsync(FileResult photo)
+        {
+            var dir = Path.Combine(FileSystem.CacheDirectory, "photos");
+            Directory.CreateDirectory(dir);
+            var path = Path.Combine(dir, $"photo_{DateTime.UtcNow:yyyyMMddHHmmssfff}.jpg");
+            using var stream = await photo.OpenReadAsync();
+            using var fs = File.Create(path);
+            await stream.CopyToAsync(fs);
+            return path;
         }
 
         [RelayCommand]
