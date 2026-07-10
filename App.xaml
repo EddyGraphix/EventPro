@@ -14,6 +14,41 @@
                 <uxd:PopupStyles />
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- ===== Popup Theme Overrides (Premium Light Theme) ===== -->
+
+            <!-- Stronger backdrop for depth/contrast -->
+            <Color x:Key="PopupBackdropColor">#B0000000</Color>
+
+            <!-- Card surface -->
+            <Color x:Key="BackgroundColor">#FFFFFF</Color>
+            <Color x:Key="BackgroundSecondaryColor">#F8F9FA</Color>
+            <Color x:Key="BackgroundTertiaryColor">#F1F3F5</Color>
+
+            <!-- Subtle border -->
+            <Color x:Key="PopupBorderColor">#E2E5EA</Color>
+
+            <!-- Typography -->
+            <Color x:Key="TextColor">#0B0D17</Color>
+            <Color x:Key="TextSecondaryColor">#4B5563</Color>
+            <Color x:Key="TextTertiaryColor">#9CA3AF</Color>
+
+            <!-- Primary brand accent -->
+            <Color x:Key="PrimaryColor">#6366F1</Color>
+            <Color x:Key="PrimaryVariantColor">#4F46E5</Color>
+
+            <!-- Larger corner radius for card-like popups -->
+            <CornerRadius x:Key="CornerRadiusXBig">24</CornerRadius>
+            <CornerRadius x:Key="CornerRadiusBig">20</CornerRadius>
+            <x:Int32 x:Key="BaseButtonCornerRadius">12</x:Int32>
+
+            <!-- Spacing -->
+            <Thickness x:Key="AirSpacing">32</Thickness>
+            <Thickness x:Key="PopupAirSpacing">28</Thickness>
+            <x:Double x:Key="SpacingXBig">28</x:Double>
+            <x:Double x:Key="SpacingBig">20</x:Double>
+            <x:Double x:Key="SpacingMedium">16</x:Double>
+            <x:Double x:Key="SpacingSmall">12</x:Double>
+
             <!-- Popup icon overrides (use our Font Awesome glyphs) -->
             <x:String x:Key="IconsFontFamily">FAS</x:String>
             <x:String x:Key="AppFontFamily">OpenSans-Regular</x:String>
