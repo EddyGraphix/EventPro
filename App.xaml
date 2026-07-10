@@ -10,7 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-                <uxd:DarkTheme />
+                <uxd:LightTheme />
                 <uxd:PopupStyles />
             </ResourceDictionary.MergedDictionaries>
 

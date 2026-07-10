@@ -11,7 +11,7 @@ namespace Ticket.Services
             var toast = new Toast
             {
                 Title = title,
-                IconColor = iconColor ?? Colors.White
+                IconColor = iconColor ?? Color.FromArgb("#1F2937")
             };
             await IPopupService.Current.PushAsync(toast, waitUntilClosed: false);
             await Task.Delay(durationMs);
