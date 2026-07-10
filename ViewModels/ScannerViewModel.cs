@@ -55,7 +55,8 @@ namespace Ticket.ViewModels
                 switch (result.Status)
                 {
                     case ValidationResultStatus.Valid:
-                        await PopupHelper.ShowIconTextAsync("\uf058", "Access Granted", $"{result.Attendee?.FullName}\n{result.Attendee?.TicketType}\n\n{result.Message}", "#10B981", "Scan Again");
+                        var notes = !string.IsNullOrEmpty(result.Attendee?.Notes) ? $"\n{result.Attendee.Notes}" : "";
+await PopupHelper.ShowIconTextAsync("\uf058", "Access Granted", $"{result.Attendee?.FullName}\n{result.Attendee?.TicketType}{notes}\n\n{result.Message}", "#10B981", "Scan Again");
                         break;
                     case ValidationResultStatus.AlreadyUsed:
                         await PopupHelper.ShowIconTextAsync("\uf071", "Already Checked In", $"{result.Attendee?.FullName}\n{result.Attendee?.TicketType}\n\n{result.Message}", "#F59E0B", "Scan Again");
